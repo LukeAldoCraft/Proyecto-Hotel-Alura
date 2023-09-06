@@ -10,16 +10,24 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import javax.swing.JTextField;
+
+import com.mx.alura.hotel.dao.ReservasDAO;
+import com.mx.alura.hotel.modelo.Reservas;
+import com.mx.alura.hotel.utils.JPAUtils;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Font;
 import javax.swing.JComboBox;
+import javax.persistence.EntityManager;
 import javax.swing.DefaultComboBoxModel;
 import java.text.Format;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
+import java.math.BigDecimal;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
@@ -264,7 +272,28 @@ public class ReservasView extends JFrame {
 		txtFechaSalida.setFont(new Font("Roboto", Font.PLAIN, 18));
 		txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				//Activa el evento, después del usuario seleccionar las fechas se debe calcular el valor de la reserva
+				
+					if (txtFechaEntrada.getDate() != null && txtFechaSalida.getDate() != null) {
+			            Date fechaEntrada = txtFechaEntrada.getDate();
+			            Date fechaSalida = txtFechaSalida.getDate();
+
+			            // Asegurarse de que la fecha de salida sea posterior o igual a la fecha de entrada
+			            if (!fechaSalida.before(fechaEntrada)) {
+			                long diferenciaEnMilisegundos = fechaSalida.getTime() - fechaEntrada.getTime();
+			                long diferenciaEnDias = TimeUnit.DAYS.convert(diferenciaEnMilisegundos, TimeUnit.MILLISECONDS);
+
+			              
+			                    double tarifaDiaria = 180.0; // Cambia esto según tu tarifa diaria
+			                    double costoTotal = tarifaDiaria * (diferenciaEnDias + 1); // Suma 1 para incluir el primer día
+
+			                    txtValor.setText(String.valueOf(costoTotal));
+			              
+			            } else {
+			                // Las fechas no son válidas, muestra un mensaje de error
+			                txtValor.setText("Fechas no válidas");
+			            }
+			        }
+			    
 			}
 		});
 		txtFechaSalida.setDateFormatString("yyyy-MM-dd");
@@ -276,7 +305,7 @@ public class ReservasView extends JFrame {
 		txtValor.setBackground(SystemColor.text);
 		txtValor.setHorizontalAlignment(SwingConstants.CENTER);
 		txtValor.setForeground(Color.BLACK);
-		txtValor.setBounds(78, 328, 43, 33);
+		txtValor.setBounds(78, 328, 238, 33);
 		txtValor.setEditable(false);
 		txtValor.setFont(new Font("Roboto Black", Font.BOLD, 17));
 		txtValor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
@@ -298,6 +327,23 @@ public class ReservasView extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
 					RegistroHuesped registro = new RegistroHuesped();
+					
+					  
+					Reservas reserva = new Reservas(txtFechaEntrada.getDate(), txtFechaSalida.getDate(), new BigDecimal(txtValor.getText()), String.valueOf(txtFormaPago.getSelectedItem()));
+					
+					EntityManager em = JPAUtils.getEntityManager();
+					
+					ReservasDAO reservasDao = new ReservasDAO(em);
+					
+					em.getTransaction().begin();
+					
+					reservasDao.guardar(reserva);
+					
+					em.getTransaction().commit();
+					
+					em.close();
+					
+					
 					registro.setVisible(true);
 				} else {
 					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
