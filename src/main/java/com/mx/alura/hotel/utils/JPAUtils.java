@@ -6,7 +6,7 @@ import javax.persistence.Persistence;
 
 public class JPAUtils {
      
-	private static EntityManagerFactory FACTORY = Persistence.createEntityManagerFactory("hotel");
+	private static EntityManagerFactory FACTORY = Persistence.createEntityManagerFactory("Hotel");
 	
 	
 	public static EntityManager getEntityManager() {
