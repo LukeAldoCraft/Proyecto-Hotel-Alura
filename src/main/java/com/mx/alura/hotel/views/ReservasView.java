@@ -325,26 +325,35 @@ public class ReservasView extends JFrame {
 		btnsiguiente.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
 					RegistroHuesped registro = new RegistroHuesped();
 					
+					if(txtValor.getText() != "Fechas no válidas"){
+						
+						Reservas reserva = new Reservas(txtFechaEntrada.getDate(), txtFechaSalida.getDate(), new BigDecimal(txtValor.getText()), String.valueOf(txtFormaPago.getSelectedItem()));
+						
+						EntityManager em = JPAUtils.getEntityManager();
+						
+						ReservasDAO reservasDao = new ReservasDAO(em);
+						
+						em.getTransaction().begin();
+						
+						reservasDao.guardar(reserva);
+						
+						em.getTransaction().commit();
+						
+						em.close();
+						
+						
+						registro.setVisible(true);
+						
+					} else {
+						
+						JOptionPane.showMessageDialog(null, "No se guardaran datos invalidos");
+					}
 					  
-					Reservas reserva = new Reservas(txtFechaEntrada.getDate(), txtFechaSalida.getDate(), new BigDecimal(txtValor.getText()), String.valueOf(txtFormaPago.getSelectedItem()));
 					
-					EntityManager em = JPAUtils.getEntityManager();
-					
-					ReservasDAO reservasDao = new ReservasDAO(em);
-					
-					em.getTransaction().begin();
-					
-					reservasDao.guardar(reserva);
-					
-					em.getTransaction().commit();
-					
-					em.close();
-					
-					
-					registro.setVisible(true);
 				} else {
 					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
 				}
