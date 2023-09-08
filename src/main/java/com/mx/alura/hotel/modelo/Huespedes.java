@@ -7,17 +7,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 public class Huespedes {
      
 	 @Id
 	 @GeneratedValue(strategy=GenerationType.AUTO)
-	 private Integer id;
+	 private Long id;
 	 private String nombre;
 	 private String apellido;
+	 
+	 @Temporal(TemporalType.DATE)
 	 private Date fechaDeNacimiento;
-	 private String nacionalidad;
+     private String nacionalidad;
 	 private String telefono;
 	 
 	 @ManyToOne
@@ -35,7 +39,11 @@ public class Huespedes {
 		this.nacionalidad = nacionalidad;
 		this.telefono = telefono;
 	}
-
+     
+	 public Long getId() {
+			return id;
+		}
+	
 	public String getNombre() {
 		return nombre;
 	}

@@ -43,7 +43,7 @@ public class MenuPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public MenuPrincipal() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(MenuPrincipal.class.getResource("/imagenes/aH-40px.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/aH-40px.png"));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 910, 537);
 		contentPane = new JPanel();
@@ -63,12 +63,12 @@ public class MenuPrincipal extends JFrame {
 		
 		JLabel imagenFondo = new JLabel("");
 		imagenFondo.setBounds(-50, 0, 732, 501);
-		imagenFondo.setIcon(new ImageIcon(MenuPrincipal.class.getResource("/imagenes/menu-img.png")));
+		imagenFondo.setIcon(new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/menu-img.png"));
 		panel.add(imagenFondo);
 		
 		JLabel logo = new JLabel("");
-		logo.setBounds(722, 80, 150, 156);
-		logo.setIcon(new ImageIcon(MenuPrincipal.class.getResource("/imagenes/aH-150px.png")));
+		logo.setBounds(716, 82, 150, 156);
+		logo.setIcon(new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/aH-150px.png"));
 		panel.add(logo);
 		
 		JPanel panel_1 = new JPanel();
@@ -153,7 +153,7 @@ public class MenuPrincipal extends JFrame {
 		imagenLogin.setBounds(0, 0, 80, 70);
 		btnLogin.add(imagenLogin);
 		imagenLogin.setHorizontalAlignment(SwingConstants.CENTER);
-		imagenLogin.setIcon(new ImageIcon(MenuPrincipal.class.getResource("/imagenes/login.png")));
+		imagenLogin.setIcon(new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/login.png"));
 		
 		JLabel lblTitulo = new JLabel("LOGIN");
 		lblTitulo.setBounds(754, 265, 83, 24);

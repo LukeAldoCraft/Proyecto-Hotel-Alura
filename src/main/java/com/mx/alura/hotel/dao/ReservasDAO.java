@@ -17,4 +17,8 @@ public class ReservasDAO {
 		
 	}
 	
+	public Reservas consultaPorId(Reservas id) {
+		return em.find(Reservas.class, id);
+	}
+	
 }
