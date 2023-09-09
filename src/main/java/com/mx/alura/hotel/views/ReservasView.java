@@ -42,7 +42,7 @@ public class ReservasView extends JFrame {
 	public static JDateChooser txtFechaEntrada;
 	public static JDateChooser txtFechaSalida;
 	public static JComboBox<String> txtFormaPago;
-	public static Long IdRegistrado;
+	public static Reservas reserva;
 	int xMouse, yMouse;
 	private JLabel labelExit;
 	private JLabel labelAtras;
@@ -272,6 +272,7 @@ public class ReservasView extends JFrame {
 		txtFechaSalida.setBackground(Color.WHITE);
 		txtFechaSalida.setFont(new Font("Roboto", Font.PLAIN, 18));
 		txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener() {
+			
 			public void propertyChange(PropertyChangeEvent evt) {
 				
 					if (txtFechaEntrada.getDate() != null && txtFechaSalida.getDate() != null) {
@@ -328,11 +329,11 @@ public class ReservasView extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				
 				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
-					RegistroHuesped registro = new RegistroHuesped();
+					
 					
 					if(txtValor.getText() != null && !txtValor.getText().equals("Fechas no válidas")){
 						
-						Reservas reserva = new Reservas(txtFechaEntrada.getDate(), txtFechaSalida.getDate(), new BigDecimal(txtValor.getText()), String.valueOf(txtFormaPago.getSelectedItem()));
+						reserva = new Reservas(txtFechaEntrada.getDate(), txtFechaSalida.getDate(), new BigDecimal(txtValor.getText()), String.valueOf(txtFormaPago.getSelectedItem()));
 						
 						EntityManager em = JPAUtils.getEntityManager();
 						
@@ -344,14 +345,13 @@ public class ReservasView extends JFrame {
 						
 						em.getTransaction().commit();
 						
-						IdRegistrado = reserva.getId();
-						
 						em.close();
 						
-						if(IdRegistrado != null) {
-							JOptionPane.showMessageDialog(null, "Registro Satisfactorio");
+						if(reserva.getId() != null) {
+							JOptionPane.showMessageDialog(null, "Registro con exito, ahora registre al Huesped");
 						}
 						
+						RegistroHuesped registro = new RegistroHuesped();
 						registro.setVisible(true);
 						
 					} else {

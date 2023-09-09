@@ -6,8 +6,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import java.awt.Color;
+
+import com.mx.alura.hotel.dao.HuespedesDAO;
+import com.mx.alura.hotel.dao.ReservasDAO;
+import com.mx.alura.hotel.modelo.Huespedes;
+import com.mx.alura.hotel.utils.JPAUtils;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
+import javax.persistence.EntityManager;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -59,6 +65,8 @@ public class RegistroHuesped extends JFrame {
 	 * Create the frame.
 	 */
 	public RegistroHuesped() {
+		
+		
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/lOGO-50PX.png"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,6 +131,34 @@ public class RegistroHuesped extends JFrame {
 		labelAtras.setBounds(0, 0, 53, 36);
 		btnAtras.add(labelAtras);
 		
+		final JPanel btnexit = new JPanel();
+		btnexit.setBounds(857, 0, 53, 36);
+		header.add(btnexit);
+		btnexit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.exit(0);
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnexit.setBackground(Color.red);
+				labelExit.setForeground(Color.white);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				 btnexit.setBackground(Color.white);
+			     labelExit.setForeground(Color.black);
+			}
+		});
+		
+		btnexit.setLayout(null);
+		btnexit.setBackground(Color.WHITE);
+		
+		labelExit = new JLabel("X");
+		labelExit.setBounds(0, 0, 53, 36);
+		btnexit.add(labelExit);
+		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
+		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
 		
 		txtNombre = new JTextField();
 		txtNombre.setFont(new Font("Roboto", Font.PLAIN, 16));
@@ -212,6 +248,8 @@ public class RegistroHuesped extends JFrame {
 		txtNreserva.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		contentPane.add(txtNreserva);
 		
+        txtNreserva.setText(String.valueOf(ReservasView.reserva.getId()));
+		
 		JSeparator separator_1_2 = new JSeparator();
 		separator_1_2.setBounds(560, 170, 289, 2);
 		separator_1_2.setForeground(new Color(12, 138, 199));
@@ -253,6 +291,30 @@ public class RegistroHuesped extends JFrame {
 		btnguardar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if(!txtNombre.getText().equals(null) && !txtApellido.getText().equals(null) && !txtFechaN.getDate().equals(null) && !txtTelefono.getText().equals(null)) {
+					
+					Huespedes huesped = new Huespedes(txtNombre.getText(), txtApellido.getText(), txtFechaN.getDate(), String.valueOf(txtNacionalidad.getSelectedItem()),  txtTelefono.getText(), ReservasView.reserva);
+					
+					EntityManager em = JPAUtils.getEntityManager();
+					
+					HuespedesDAO huespedDao = new HuespedesDAO(em);
+					
+					em.getTransaction().begin();
+					
+					huespedDao.guardar(huesped);
+					
+					em.getTransaction().commit();
+					
+					em.close();
+					
+					if(huesped.getId() != null) {
+						Exito exito = new Exito();
+						exito.setVisible(true);
+					}
+					
+				} else {
+					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
+				}
 			}
 		});
 		btnguardar.setLayout(null);
@@ -283,38 +345,8 @@ public class RegistroHuesped extends JFrame {
 		panel.add(logo);
 		logo.setIcon(new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/Ha-100px.png"));
 		
-		final JPanel btnexit = new JPanel();
-		btnexit.setBounds(857, 0, 53, 36);
-		contentPane.add(btnexit);
-		btnexit.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				MenuPrincipal principal = new MenuPrincipal();
-				principal.setVisible(true);
-				dispose();
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnexit.setBackground(Color.red);
-				labelExit.setForeground(Color.white);
-			}			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				 btnexit.setBackground(Color.white);
-			     labelExit.setForeground(Color.black);
-			}
-		});
-		btnexit.setLayout(null);
-		btnexit.setBackground(Color.white);
 		
-		labelExit = new JLabel("X");
-		labelExit.setBounds(0, 0, 53, 36);
-		btnexit.add(labelExit);
-		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
-		labelExit.setForeground(SystemColor.black);
-		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
-	}
-	
+}
 	
 	//Código que permite mover la ventana por la pantalla según la posición de "x" y "y"	
 	 private void headerMousePressed(java.awt.event.MouseEvent evt) {
@@ -327,5 +359,4 @@ public class RegistroHuesped extends JFrame {
 	        int y = evt.getYOnScreen();
 	        this.setLocation(x - xMouse, y - yMouse);
 }
-											
 }

@@ -31,16 +31,22 @@ public class Huespedes {
 		
 	}
 
-	public Huespedes(String nombre, String apellido, Date fechaDeNacimiento, String nacionalidad, String telefono) {
 	
+     
+	 public Huespedes(String nombre, String apellido, Date fechaDeNacimiento, String nacionalidad, String telefono,
+			Reservas reserva) {
+		super();
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.fechaDeNacimiento = fechaDeNacimiento;
 		this.nacionalidad = nacionalidad;
 		this.telefono = telefono;
+		this.reserva = reserva;
 	}
-     
-	 public Long getId() {
+
+
+
+	public Long getId() {
 			return id;
 		}
 	

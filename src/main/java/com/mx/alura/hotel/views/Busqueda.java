@@ -59,7 +59,7 @@ public class Busqueda extends JFrame {
 	 * Create the frame.
 	 */
 	public Busqueda() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Busqueda.class.getResource("/imagenes/lupa2.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/lupa2.png"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 571);
 		contentPane = new JPanel();
@@ -102,7 +102,7 @@ public class Busqueda extends JFrame {
 		modelo.addColumn("Valor");
 		modelo.addColumn("Forma de Pago");
 		JScrollPane scroll_table = new JScrollPane(tbReservas);
-		panel.addTab("Reservas", new ImageIcon(Busqueda.class.getResource("/imagenes/reservado.png")), scroll_table, null);
+		panel.addTab("Reservas", new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/reservado.png"), scroll_table, null);
 		scroll_table.setVisible(true);
 		
 		
@@ -118,11 +118,11 @@ public class Busqueda extends JFrame {
 		modeloHuesped.addColumn("Telefono");
 		modeloHuesped.addColumn("Número de Reserva");
 		JScrollPane scroll_tableHuespedes = new JScrollPane(tbHuespedes);
-		panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/pessoas.png")), scroll_tableHuespedes, null);
+		panel.addTab("Huéspedes", new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/pessoas.png"), scroll_tableHuespedes, null);
 		scroll_tableHuespedes.setVisible(true);
 		
 		JLabel lblNewLabel_2 = new JLabel("");
-		lblNewLabel_2.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/Ha-100px.png")));
+		lblNewLabel_2.setIcon(new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/Ha-100px.png"));
 		lblNewLabel_2.setBounds(56, 51, 104, 107);
 		contentPane.add(lblNewLabel_2);
 		
