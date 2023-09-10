@@ -42,6 +42,7 @@ public class MenuPrincipal extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	
 	public MenuPrincipal() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/aH-40px.png"));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

@@ -6,15 +6,26 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import com.mx.alura.hotel.dao.HuespedesDAO;
+import com.mx.alura.hotel.dao.ReservasDAO;
+import com.mx.alura.hotel.modelo.Huespedes;
+import com.mx.alura.hotel.modelo.Reservas;
+import com.mx.alura.hotel.utils.JPAUtils;
+
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.persistence.EntityManager;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
@@ -25,6 +36,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.math.BigDecimal;
 
 @SuppressWarnings("serial")
 public class Busqueda extends JFrame {
@@ -38,7 +50,7 @@ public class Busqueda extends JFrame {
 	private JLabel labelAtras;
 	private JLabel labelExit;
 	int xMouse, yMouse;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -54,7 +66,8 @@ public class Busqueda extends JFrame {
 			}
 		});
 	}
-
+    
+   	
 	/**
 	 * Create the frame.
 	 */
@@ -90,8 +103,6 @@ public class Busqueda extends JFrame {
 		contentPane.add(panel);
 
 		
-		
-		
 		tbReservas = new JTable();
 		tbReservas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tbReservas.setFont(new Font("Roboto", Font.PLAIN, 16));
@@ -120,6 +131,8 @@ public class Busqueda extends JFrame {
 		JScrollPane scroll_tableHuespedes = new JScrollPane(tbHuespedes);
 		panel.addTab("Huéspedes", new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/pessoas.png"), scroll_tableHuespedes, null);
 		scroll_tableHuespedes.setVisible(true);
+		
+		buscar();
 		
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setIcon(new ImageIcon("/home/aldo/Documentos/Proyectos/Proyecto-Hotel-Alura/src/imagenes/Ha-100px.png"));
@@ -216,7 +229,92 @@ public class Busqueda extends JFrame {
 		btnbuscar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
+				if(!txtBuscar.getText().equals(null)) {
+					
+					try {
+						EntityManager em = JPAUtils.getEntityManager();
+						
+						 ReservasDAO reservasDao = new ReservasDAO(em);
+						
+						 HuespedesDAO huespedesDao = new HuespedesDAO(em);
+						 
+					    Long numero = Long.parseLong(txtBuscar.getText());
+					    
+					   Reservas reserva = reservasDao.consultaPorId(numero);
+					   
+					   Huespedes huesped = huespedesDao.consultaPorId(reserva.getId());
+					   
+					   
+					   if(reserva != null) {
+						  
+						     em.getTransaction().begin();
+						   
+						      modelo.setRowCount(0);
+						   
+						    modelo.addRow(new Object[]{
+						        reserva.getId(),                    
+						        reserva.getFechaDeEntrada(),       
+						        reserva.getFechaDeSalida(),        
+						        reserva.getValor(),                 
+						        reserva.getFormaDePago()          
+						    });
+						    
+						    modeloHuesped.setRowCount(0);
+						    
+						    modeloHuesped.addRow(new Object[] {
+							    	huesped.getId(),	
+							        huesped.getNombre(),                    
+							        huesped.getApellido(),       
+							        huesped.getFechaDeNacimiento(),        
+							        huesped.getNacionalidad(),                 
+							        huesped.getTelefono(),
+							        huesped.getReserva().getId()
+							    });
+						    
+						   em.close();
+						   
+					   } else {
+						   JOptionPane.showMessageDialog(null, "No existen registros con ese numero de reserva");
+					   }
 
+					} catch (NumberFormatException ex) {
+					    
+						EntityManager em = JPAUtils.getEntityManager();
+						
+						HuespedesDAO huespedesDao = new HuespedesDAO(em); 
+						
+						List<Huespedes> huespedes = huespedesDao.consultarPorNombre(txtBuscar.getText());
+						
+						if(huespedes != null) {
+							
+							em.getTransaction().begin();
+							
+							modeloHuesped.setRowCount(0);
+							
+							for (Huespedes huesped : huespedes) {
+							    modeloHuesped.addRow(new Object[] {
+							    	huesped.getId(),	
+							        huesped.getNombre(),                    
+							        huesped.getApellido(),       
+							        huesped.getFechaDeNacimiento(),        
+							        huesped.getNacionalidad(),                 
+							        huesped.getTelefono(),
+							        huesped.getReserva().getId()
+							    });
+							}
+							
+							em.close();
+							
+						} else {
+							JOptionPane.showMessageDialog(null, "No existen registros con ese apellido en los huespedes");
+						}
+					}
+					
+				}   else {
+					JOptionPane.showMessageDialog(null, "Debes llenar la casilla de biusqueda.");
+				}
+				
 			}
 		});
 		btnbuscar.setLayout(null);
@@ -233,6 +331,89 @@ public class Busqueda extends JFrame {
 		lblBuscar.setFont(new Font("Roboto", Font.PLAIN, 18));
 		
 		JPanel btnEditar = new JPanel();
+		btnEditar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				int filaModelo = tbReservas.getSelectedRow();
+				
+				int filaModeloHuesped = tbHuespedes.getSelectedRow();
+				
+		
+				
+				if(filaModelo >= 0 || filaModeloHuesped >= 0) {
+					
+					if(filaModelo >= 0 && filaModeloHuesped < 0) {
+						  
+						EntityManager em = JPAUtils.getEntityManager();
+						
+						Long id = Long.parseLong(tbReservas.getValueAt(filaModelo, 0).toString());
+						Date fechaEntrada = (Date) (tbReservas.getValueAt(filaModelo, 1)); 
+						Date fechaSalida = (Date) (tbReservas.getValueAt(filaModelo, 2));
+						String valorStr = tbReservas.getValueAt(filaModelo, 3).toString();
+						BigDecimal valor = new BigDecimal(valorStr);
+						String formaPago = tbReservas.getValueAt(filaModelo, 4).toString();
+						
+					    ReservasDAO reservasDao = new ReservasDAO(em);
+						
+						Reservas reserva = reservasDao.consultaPorId(id);
+						    
+						em.getTransaction().begin();
+						
+						        reserva.setFechaDeEntrada(fechaEntrada);       
+						        reserva.setFechaDeSalida(fechaSalida);        
+						        reserva.setValor(valor);                 
+						        reserva.setFormaDePago(formaPago);
+						        
+					   reservasDao.actualizar(reserva);   
+					   
+					   em.getTransaction().commit();
+					   
+					   em.close();
+					  
+					   buscar();
+						
+					} else {
+						
+						EntityManager em = JPAUtils.getEntityManager();
+						
+					 Long id = Long.parseLong(tbReservas.getValueAt(filaModeloHuesped, 0).toString());	
+					 String nombre = tbReservas.getValueAt(filaModeloHuesped, 1).toString();
+					 String apellido = tbReservas.getValueAt(filaModeloHuesped, 2).toString();
+					 Date fechaNacimiento = (Date) (tbReservas.getValueAt(filaModeloHuesped, 3));
+					 String nacionalidad = tbReservas.getValueAt(filaModeloHuesped, 4).toString();
+					 String telefono = tbReservas.getValueAt(filaModeloHuesped, 5).toString();
+					 
+					 HuespedesDAO huespedesDao = new HuespedesDAO(em);
+					 
+					 Huespedes huesped = huespedesDao.consultaPorId(id);
+					 
+					 em.getTransaction().begin();
+					 
+					    	
+						        huesped.setNombre(nombre);                    
+						        huesped.setApellido(apellido);       
+						        huesped.setFechaDeNacimiento(fechaNacimiento);        
+						        huesped.setNacionalidad(nacionalidad);                 
+						        huesped.setTelefono(telefono);
+						        
+					huespedesDao.actualizar(huesped);
+					
+					em.getTransaction().commit();
+					
+					em.close();
+					
+					buscar();
+						        
+					}
+					
+					
+				} else {
+					JOptionPane.showMessageDialog(null, "Seleciona la fila que deseas editar.");
+				}
+				
+			}
+		});
 		btnEditar.setLayout(null);
 		btnEditar.setBackground(new Color(12, 138, 199));
 		btnEditar.setBounds(635, 508, 122, 35);
@@ -247,6 +428,12 @@ public class Busqueda extends JFrame {
 		btnEditar.add(lblEditar);
 		
 		JPanel btnEliminar = new JPanel();
+		btnEliminar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+			}
+		});
 		btnEliminar.setLayout(null);
 		btnEliminar.setBackground(new Color(12, 138, 199));
 		btnEliminar.setBounds(767, 508, 122, 35);
@@ -273,4 +460,42 @@ public class Busqueda extends JFrame {
 	        int y = evt.getYOnScreen();
 	        this.setLocation(x - xMouse, y - yMouse);
 }
+	    public  void buscar() {
+	    	
+	    	EntityManager em = JPAUtils.getEntityManager();
+	    	
+	    	
+	    	ReservasDAO reservasDao = new ReservasDAO(em);
+			
+			List<Reservas> reservas = reservasDao.consultarTodos();
+			
+			for (Reservas reserva : reservas) {
+			   
+						modelo.addRow(new Object[] {
+						    reserva.getId(),                    
+						    reserva.getFechaDeEntrada(),       
+						    reserva.getFechaDeSalida(),        
+						    reserva.getValor(),                 
+						    reserva.getFormaDePago()          
+						});
+			    
+			}
+			
+			HuespedesDAO huespedesDao = new HuespedesDAO(em);
+			
+			List<Huespedes> huespedes = huespedesDao.consultarTodos();
+			
+			for (Huespedes huesped : huespedes) {
+			    modeloHuesped.addRow(new Object[] {
+			    	huesped.getId(),	
+			        huesped.getNombre(),                    
+			        huesped.getApellido(),       
+			        huesped.getFechaDeNacimiento(),        
+			        huesped.getNacionalidad(),                 
+			        huesped.getTelefono(),
+			        huesped.getReserva().getId()
+			    });
+			}
+			
+		}
 }

@@ -1,7 +1,10 @@
 package com.mx.alura.hotel.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
+import com.mx.alura.hotel.modelo.Huespedes;
 import com.mx.alura.hotel.modelo.Reservas;
 
 public class ReservasDAO {
@@ -13,12 +16,22 @@ public class ReservasDAO {
 	}
 
 	public void guardar(Reservas reserva) {
-		em.persist(reserva);
+		this.em.persist(reserva);
 		
 	}
 	
-	public Reservas consultaPorId(Reservas id) {
+	public void actualizar(Reservas reserva) {
+		this.em.merge(reserva);
+	}
+	
+	public Reservas consultaPorId(Long id) {
 		return em.find(Reservas.class, id);
 	}
+	
+	public List<Reservas> consultarTodos() {
+		   String jpql = "SELECT R FROM Reservas AS R";
+		   return em.createQuery(jpql, Reservas.class).getResultList();
+	 }
+	
 	
 }
