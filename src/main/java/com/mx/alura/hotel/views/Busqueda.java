@@ -230,20 +230,16 @@ public class Busqueda extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				if(!txtBuscar.getText().equals(null)) {
+				if(!txtBuscar.getText().isEmpty()) {
 					
 					try {
 						EntityManager em = JPAUtils.getEntityManager();
 						
 						 ReservasDAO reservasDao = new ReservasDAO(em);
 						
-						 HuespedesDAO huespedesDao = new HuespedesDAO(em);
-						 
 					    Long numero = Long.parseLong(txtBuscar.getText());
 					    
 					   Reservas reserva = reservasDao.consultaPorId(numero);
-					   
-					   Huespedes huesped = huespedesDao.consultaPorId(reserva.getId());
 					   
 					   
 					   if(reserva != null) {
@@ -260,22 +256,11 @@ public class Busqueda extends JFrame {
 						        reserva.getFormaDePago()          
 						    });
 						    
-						    modeloHuesped.setRowCount(0);
-						    
-						    modeloHuesped.addRow(new Object[] {
-							    	huesped.getId(),	
-							        huesped.getNombre(),                    
-							        huesped.getApellido(),       
-							        huesped.getFechaDeNacimiento(),        
-							        huesped.getNacionalidad(),                 
-							        huesped.getTelefono(),
-							        huesped.getReserva().getId()
-							    });
-						    
+						  
 						   em.close();
 						   
 					   } else {
-						   JOptionPane.showMessageDialog(null, "No existen registros con ese numero de reserva");
+						   JOptionPane.showMessageDialog(null, "No existen registros con ese numero");
 					   }
 
 					} catch (NumberFormatException ex) {
@@ -284,9 +269,9 @@ public class Busqueda extends JFrame {
 						
 						HuespedesDAO huespedesDao = new HuespedesDAO(em); 
 						
-						List<Huespedes> huespedes = huespedesDao.consultarPorNombre(txtBuscar.getText());
+						List<Huespedes> huespedes = huespedesDao.consultarPorApellido(txtBuscar.getText());
 						
-						if(huespedes != null) {
+						if(!huespedes.isEmpty()) {
 							
 							em.getTransaction().begin();
 							
@@ -339,8 +324,6 @@ public class Busqueda extends JFrame {
 				
 				int filaModeloHuesped = tbHuespedes.getSelectedRow();
 				
-		
-				
 				if(filaModelo >= 0 || filaModeloHuesped >= 0) {
 					
 					if(filaModelo >= 0 && filaModeloHuesped < 0) {
@@ -370,19 +353,26 @@ public class Busqueda extends JFrame {
 					   em.getTransaction().commit();
 					   
 					   em.close();
+					   
+					   JOptionPane.showMessageDialog(null, "Datos Actualizados");
 					  
+					   modelo.setRowCount(0);
+					   modeloHuesped.setRowCount(0);
+					   
 					   buscar();
 						
 					} else {
 						
 						EntityManager em = JPAUtils.getEntityManager();
 						
-					 Long id = Long.parseLong(tbReservas.getValueAt(filaModeloHuesped, 0).toString());	
-					 String nombre = tbReservas.getValueAt(filaModeloHuesped, 1).toString();
-					 String apellido = tbReservas.getValueAt(filaModeloHuesped, 2).toString();
-					 Date fechaNacimiento = (Date) (tbReservas.getValueAt(filaModeloHuesped, 3));
-					 String nacionalidad = tbReservas.getValueAt(filaModeloHuesped, 4).toString();
-					 String telefono = tbReservas.getValueAt(filaModeloHuesped, 5).toString();
+						
+						 
+					 Long id = Long.parseLong(tbHuespedes.getValueAt(filaModeloHuesped, 0).toString());	
+					 String nombre = tbHuespedes.getValueAt(filaModeloHuesped, 1).toString();
+					 String apellido = tbHuespedes.getValueAt(filaModeloHuesped, 2).toString();
+					 Date fechaNacimiento = (Date) (tbHuespedes.getValueAt(filaModeloHuesped, 3));
+					 String nacionalidad = tbHuespedes.getValueAt(filaModeloHuesped, 4).toString();
+					 String telefono = tbHuespedes.getValueAt(filaModeloHuesped, 5).toString();
 					 
 					 HuespedesDAO huespedesDao = new HuespedesDAO(em);
 					 
@@ -402,6 +392,11 @@ public class Busqueda extends JFrame {
 					em.getTransaction().commit();
 					
 					em.close();
+					
+					JOptionPane.showMessageDialog(null, "Datos Actualizados");
+					
+					modeloHuesped.setRowCount(0);
+					modelo.setRowCount(0);
 					
 					buscar();
 						        
@@ -432,6 +427,79 @@ public class Busqueda extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
+                 int filaModelo = tbReservas.getSelectedRow();
+				
+				int filaModeloHuesped = tbHuespedes.getSelectedRow();
+				
+				if(filaModelo >= 0 || filaModeloHuesped >= 0) {
+					
+					if(filaModelo >= 0 && filaModeloHuesped < 0) {
+						   
+						EntityManager em = JPAUtils.getEntityManager();
+						
+						Long id = Long.parseLong(tbReservas.getValueAt(filaModelo, 0).toString());
+						
+						 ReservasDAO reservasDao = new ReservasDAO(em);
+							
+							Reservas reserva = reservasDao.consultaPorId(id);
+						
+							HuespedesDAO huespedesDao = new HuespedesDAO(em);
+							
+							Huespedes huesped = huespedesDao.consultarPorIdReserva(id);
+							
+							em.getTransaction().begin();
+
+							huespedesDao.eliminar(huesped);
+							
+						   reservasDao.eliminar(reserva);   
+						   
+						   
+						   em.getTransaction().commit();
+						   
+						   em.close();
+						   
+						   JOptionPane.showMessageDialog(null, "Datos Eliminados");
+						  
+						   modelo.setRowCount(0);
+						   modeloHuesped.setRowCount(0);
+						   
+						   buscar();
+						
+					} else {
+						
+						EntityManager em = JPAUtils.getEntityManager();
+						
+						Long id = Long.parseLong(tbHuespedes.getValueAt(filaModeloHuesped, 0).toString());
+						
+						 HuespedesDAO huespedesDao = new HuespedesDAO(em);
+						 
+						 Huespedes huesped = huespedesDao.consultaPorId(id);
+						 
+						 ReservasDAO reservasDao = new ReservasDAO(em);
+						 
+						 Reservas reserva = reservasDao.consultaPorId(huesped.getReserva().getId());
+						 
+						 em.getTransaction().begin();
+							        
+						huespedesDao.eliminar(huesped);
+
+						reservasDao.eliminar(reserva);
+						
+						em.getTransaction().commit();
+						
+						em.close();
+						
+						JOptionPane.showMessageDialog(null, "Datos Eliminados");
+						
+						modeloHuesped.setRowCount(0);
+						modelo.setRowCount(0);
+						
+						buscar();
+					}
+					
+				} else {
+					JOptionPane.showMessageDialog(null, "Seleciona la fila que deseas editar.");
+				}
 			}
 		});
 		btnEliminar.setLayout(null);

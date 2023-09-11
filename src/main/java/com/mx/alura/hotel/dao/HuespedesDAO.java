@@ -25,6 +25,12 @@ public class HuespedesDAO {
 	 public void actualizar(Huespedes huesped) {
 			this.em.merge(huesped);
 		}
+	 
+	 
+	 public void eliminar(Huespedes huesped) {
+		  huesped = this.em.merge(huesped);
+		  this.em.remove(huesped);
+	 }
 		
 		
 		public Huespedes consultaPorId(Long id) {
@@ -36,8 +42,14 @@ public class HuespedesDAO {
 		   return em.createQuery(jpql, Huespedes.class).getResultList();
 	 }
 	 
-	 public List<Huespedes> consultarPorNombre(String apellido) {
-			String jpql = "SELECT R FROM Huespedes AS R WHERE R.apellido=:apellido";
+	 public List<Huespedes> consultarPorApellido(String apellido) {
+			String jpql = "SELECT H FROM Huespedes AS H WHERE H.apellido=:apellido";
 			return em.createQuery(jpql, Huespedes.class).setParameter("apellido", apellido).getResultList();
 		}
+	 
+	 
+	 public Huespedes consultarPorIdReserva(Long id) {
+		   String jpql = "SELECT H FROM Huespedes AS H WHERE H.reserva.id=:id";
+		   return em.createQuery(jpql, Huespedes.class).setParameter("id", id).getSingleResult();
+	 }
 }

@@ -291,7 +291,7 @@ public class RegistroHuesped extends JFrame {
 		btnguardar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(!txtNombre.getText().equals(null) && !txtApellido.getText().equals(null) && !txtFechaN.getDate().equals(null) && !txtTelefono.getText().equals(null)) {
+				if(!txtNombre.getText().isEmpty() && !txtApellido.getText().isEmpty() && !txtFechaN.getDate().equals(null) && !txtTelefono.getText().isEmpty()) {
 					
 					Huespedes huesped = new Huespedes(txtNombre.getText(), txtApellido.getText(), txtFechaN.getDate(), String.valueOf(txtNacionalidad.getSelectedItem()),  txtTelefono.getText(), ReservasView.reserva);
 					

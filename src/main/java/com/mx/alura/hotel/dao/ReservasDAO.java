@@ -24,6 +24,11 @@ public class ReservasDAO {
 		this.em.merge(reserva);
 	}
 	
+	public void eliminar(Reservas reserva) {
+		  reserva = this.em.merge(reserva);
+		  this.em.remove(reserva);
+	 }
+	
 	public Reservas consultaPorId(Long id) {
 		return em.find(Reservas.class, id);
 	}
@@ -33,5 +38,5 @@ public class ReservasDAO {
 		   return em.createQuery(jpql, Reservas.class).getResultList();
 	 }
 	
-	
+	 
 }

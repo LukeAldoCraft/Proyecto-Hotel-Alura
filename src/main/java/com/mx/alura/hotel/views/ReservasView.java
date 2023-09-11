@@ -331,7 +331,7 @@ public class ReservasView extends JFrame {
 				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
 					
 					
-					if(txtValor.getText() != null && !txtValor.getText().equals("Fechas no válidas")){
+					if(!txtValor.getText().isEmpty() && !txtValor.getText().equals("Fechas no válidas")){
 						
 						reserva = new Reservas(txtFechaEntrada.getDate(), txtFechaSalida.getDate(), new BigDecimal(txtValor.getText()), String.valueOf(txtFormaPago.getSelectedItem()));
 						
